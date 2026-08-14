@@ -5,6 +5,7 @@
 #include <csignal>
 #include <iomanip>
 #include <iostream>
+#include <string>
 #include <thread>
 
 static volatile std::sig_atomic_t keep_running = 1;
@@ -27,39 +28,55 @@ int main() {
     while (keep_running) {
         uint16_t health = 0;
         uint8_t handgun_ammo = 0;
+        uint8_t shotgun_ammo = 0;
         uint8_t equipped_weapon_id = 0;
 
         if (telemetry.fetchStats(
                 health,
                 handgun_ammo,
-                equipped_weapon_id
-            )) {
+                shotgun_ammo,
+                equipped_weapon_id)) {
 
             std::string weapon_name = "Unknown";
+            std::string ammo_display = "?";
 
-            if (equipped_weapon_id == 0x01) {
-                weapon_name = "Knife";
-            } else if (equipped_weapon_id == 0x02) {
-                weapon_name = "Handgun";
+            switch (equipped_weapon_id) {
+                case 0x01:
+                    weapon_name = "Knife";
+                    ammo_display = "--";
+                    break;
+
+                case 0x02:
+                    weapon_name = "Handgun";
+                    ammo_display = std::to_string(handgun_ammo);
+                    break;
+
+                case 0x07:
+                    weapon_name = "Shotgun";
+                    ammo_display = std::to_string(shotgun_ammo);
+                    break;
+
+                default:
+                    break;
             }
 
             std::cout
                 << "\r[TELEMETRY] Status: CONNECTED"
                 << " | Health: " << health
-                << " | Handgun Ammo: "
-                << static_cast<int>(handgun_ammo)
                 << " | Weapon: 0x"
                 << std::hex
                 << std::uppercase
                 << static_cast<int>(equipped_weapon_id)
-                << " (" << weapon_name << ")"
                 << std::dec
-                << "   "
+                << " (" << weapon_name << ")"
+                << " | Ammo: " << ammo_display
+                << "          "
                 << std::flush;
 
         } else {
             std::cout
-                << "\r[TELEMETRY] Status: WAITING / RETROARCH OFFLINE...              "
+                << "\r[TELEMETRY] Status: WAITING / RETROARCH OFFLINE..."
+                << "                              "
                 << std::flush;
         }
 

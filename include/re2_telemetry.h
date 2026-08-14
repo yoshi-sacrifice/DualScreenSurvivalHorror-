@@ -11,6 +11,7 @@ public:
     bool fetchStats(
         uint16_t& out_health,
         uint8_t& out_handgun_ammo,
+        uint8_t& out_shotgun_ammo,
         uint8_t& out_equipped_weapon_id
     );
 
@@ -19,6 +20,7 @@ private:
 
     static constexpr uint32_t HEALTH_OFFSET = 0x000CFD4E;
     static constexpr uint32_t HANDGUN_AMMO_OFFSET = 0x000D4A3D;
+    static constexpr uint32_t SHOTGUN_AMMO_OFFSET = 0x000D4A45;
     static constexpr uint32_t EQUIPPED_WEAPON_OFFSET = 0x000D5BFA;
 };
 
